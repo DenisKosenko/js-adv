@@ -1,0 +1,25 @@
+<!-- Создайте функцию, которая возвращает день недели для даты.
+День нужно возвратить в формате - понедельник имеет номер 1, вторник номер 2, …, воскресенье - номер 7. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homework</title>
+</head>
+<body>
+    <script>
+
+        let userTime = prompt('Example - 2021/04(Month)/07','')
+        let date = new Date(userTime);
+        
+        findDay = (date) => {
+            let day = date.getDay()
+            let months = ['пн','вт','ср','чт','пт','сб','вс']
+            return `${months[day]} - ${day}`
+        }
+
+        alert(findDay(date));
+        
+    </script>
+</body>
+</html>
