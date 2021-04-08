@@ -1,0 +1,137 @@
+ <!-- Создайте страницу которая запрашивает имя пользователя, если пользователь вводит "Admin" либо "admin" он попадает на страницу,
+которая оповещает его о том что " Пользоваетль Admin(не статическая строка, а данные что ввел пользователь) вошел в систему"
+а рядом разместите кнопку "Выход" которая вернет пользователя к модальному окну ввода логина. Реализуйте код как для куки так и для localstorage. -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homework</title>
+</head>
+<body>
+
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .form{
+            background-color: rgb(192, 192, 192);
+            border: 2px double black;
+            padding: 30px;
+        }
+    </style>
+
+    <form class="form" name="register">
+        <input type="name" name="nameReg" >
+        <input type="button" name="submitReg" value="Register">
+    </form>
+    <form class="form" name="login" style="display: none;">
+        <input type="nameLog" name="nameLog" >
+        <input type="button" name="submitLog" value="Login">
+    </form>
+    <p class="form" id="hello" style="display: none;"></p>
+    <button id="back" style="display: none; margin-left: 15px;">Back</button>
+
+    <script>
+        
+// Я изначально не правильно понял задачу и только усложнил себе роботу, и в итоге у меня вышло чутка не то задание,
+// а переделывать, то что делал пол дня уже времени не осталось. 
+// У меня есть пример использования как localStage так и cookie. 
+// Заранее спасибо за понимание
+// Я все прокоментировал вам , что-бы было понятнее 
+
+        window.addEventListener('load', init);
+
+        function init() {
+            let register = document.forms.register;
+            let login = document.forms.login;
+
+            hello = document.querySelector('#hello')
+            back = document.querySelector('#back')
+
+            let userList = [];// простой масив пользователей, который удаляется при перезагрузке 
+            let localUsers = []// масив пользователей , который хранится в localStorage
+
+            let savedName = findCookieValue("localName");
+            if (savedName) { //Если пользователь уже прошел форму login , то при перезагрузке страницы ему показывается окно приветствия , а не регистрации
+                register.style.display = 'none';
+                hello.style.display = 'flex';
+                back.style.display = 'flex';
+                hello.innerText = 'Hello ' + findCookieValue("localName") + '!!!'
+             }
+
+            if (window.localStorage.users) { //При перезагрузке страницы к localStorsge добавляю масив пользователей , которые зарегестрировались
+                localUsers = window.localStorage.users.split()
+                userList = localUsers[0].split(',')
+                console.log(userList)
+            }
+
+            let validRegister = () => {//функция возвращает value формы register и добавляет его в масив пользователей
+                let name = register.nameReg.value;
+                userList.push(name)
+                window.localStorage.users = userList;
+                return name;
+            }
+
+            let showFormLogin = () => {
+                let flagLogin = validRegister()
+                if(flagLogin){
+                    login.style.display = 'flex';
+                    register.style.display = 'none';
+                }
+            }
+
+            let validLogin = () => {//функция возвращает значение, если value , формы login есть в масиве пользователей, то возвращает -1, если есть то 1
+                let nameForLogin = login.nameLog.value;
+                console.log(userList)
+                document.cookie = "localName=" + encodeURIComponent(nameForLogin);//заносим имя пользователя в cookie
+                return userList.indexOf(nameForLogin)
+            }
+
+            let showHello = () => {
+                if(validLogin() >= 0){
+                    login.style.display = 'none';
+                    hello.style.display = 'flex';
+                    back.style.display = 'flex';
+                    hello.innerText = 'Hello ' + findCookieValue("localName") + '!!!'
+                }else{
+                    alert('User not found')
+                }
+            }
+
+            let showFormRegister = () => {
+                document.cookie = "localName=; max-age=-1;"//удаляем cookie при нажатии на кнопку back
+                register.style.display = 'flex';
+                hello.style.display = 'none';
+                back.style.display = 'none';
+            }
+
+            function findCookieValue(cookieName) {
+                let allcookies = document.cookie;
+                let pos = allcookies.indexOf(cookieName + "=");
+
+                if (pos != -1) {
+                    var start = pos + cookieName.length + 1;
+                    let end = allcookies.indexOf(";", start);
+
+                    if (end == -1) end = allcookies.length;
+
+                    let value = allcookies.substring(start, end);
+                    value = decodeURIComponent(value);
+                    return value;
+                }
+            };
+
+            //сделал все через click потому что с submit никак не хочет работать
+            back.addEventListener('click',showFormRegister)
+            register.submitReg.addEventListener('click',showFormLogin)
+            login.submitLog.addEventListener('click',showHello)
+    }
+    </script>
+
+</body>
+</html>
