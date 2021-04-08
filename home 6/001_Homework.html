@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="UTF-8">
+	<title>HomeWork</title>
+</head>
+<body style="background-color: black;">
+    <!-- 
+	1. drag and drop;
+	2. создайте div, при клике на него, div начинает двигаться вправо, при клике на кнопку - останавливается,
+	при попадании div к краю окна, он переходит к началу окна.
+	-->
+	<div style="height: 200px; width: 200px; background-color: rgb(255, 0, 85); position: absolute; border-radius: 15%; z-index: 1;" class="drag"></div>
+	<div style="height: 200px; width: 200px; background-color: rgb(238, 255, 0); position: absolute; top: 250px; border-radius: 15%; transition-duration: 0.1s;" class="edge"></div>
+	<button class="stop" style="position: absolute; top: 500px; width: 100px;">Stop</button>
+	<script>
+		//-------------------1-------------------- Честно говоря , то все таки не удалось самому реализовать, подсмотрел
+		let drag = document.querySelector('.drag')
+		
+		drag.addEventListener('mousedown',function(e){
+			let coords = getCoords(drag);
+			let shiftX = e.pageX - coords.left;
+			let shiftY = e.pageY - coords.top;
+			
+			moveAt(e);
+
+			function moveAt(e) {
+				drag.style.left = e.pageX - shiftX + 'px';
+				drag.style.top = e.pageY - shiftY + 'px';
+			}
+
+			document.onmousemove = function(e) {
+				moveAt(e);0
+			}
+
+			drag.onmouseup = function() {
+				document.onmousemove = null;
+				drag.onmouseup = null;
+			};
+
+		})
+
+		function getCoords(elem) {
+			let box = elem.getBoundingClientRect();
+			return {
+				top: box.top + pageYOffset,
+				left: box.left + pageXOffset
+			};
+		}
+
+		//-------------------2--------------------
+		let edge = document.querySelector('.edge')
+		let stopBtn = document.querySelector('.stop')
+		let animate = 0;
+
+		edge.addEventListener('mousedown',rightMove)
+
+		function rightMove(){
+			let timer = setInterval(move,100)
+
+			stopBtn.addEventListener('click',function(e){
+				clearInterval(timer)
+			})
+		}
+
+		function move(){
+			edge.style.left = (animate+=8) + 'px';
+			if (edge.getBoundingClientRect().right >= innerWidth){
+				edge.style.left = 0;
+				animate = 0
+			}
+		}
+		
+	</script>
+</body>
+</html>
